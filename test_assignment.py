@@ -1,9 +1,11 @@
 """Optional focused check starting points; expand them across the week."""
 
+from copy import deepcopy
+
 from network_support import validate_model
 from main import breadth_first, depth_first, shortest_hop_path, MY_RESTRICTION
 
-TEST_STAGE = 1  # Raise to 2 Tuesday and 3 Thursday after completing those tests.
+TEST_STAGE = 2  # Raise to 3 Thursday after completing the route tests.
 
 
 def test_model():
@@ -16,9 +18,27 @@ def test_model():
 def test_traversals():
     """Check independent expectations before trying the full workshop fixture."""
     tiny = {"A": ["B", "C"], "B": ["A"], "C": ["A"], "D": []}
-    # Assert expected orders, no repeated processing, four adjacency entries,
-    # and source preservation using both functions.
-    raise NotImplementedError("Add Tuesday's focused traversal checks.")
+    original = deepcopy(tiny)
+
+    bfs_order, _, bfs_edges = breadth_first(tiny, "A")
+    # Expected BFS order
+    assert bfs_order == ["A", "B", "C"]
+    # No repeated BFS processing
+    assert len(bfs_order) == len(set(bfs_order))
+    # Four BFS adjacency entries
+    assert bfs_edges == 4
+    # BFS preserves the source graph
+    assert tiny == original
+
+    dfs_order, _, dfs_edges = depth_first(tiny, "A")
+    # Expected DFS order
+    assert dfs_order == ["A", "B", "C"]
+    # No repeated DFS processing
+    assert len(dfs_order) == len(set(dfs_order))
+    # Four DFS adjacency entries
+    assert dfs_edges == 4
+    # DFS preserves the source graph
+    assert tiny == original
 
 
 def test_paths_and_personal_case():

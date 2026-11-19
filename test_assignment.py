@@ -5,7 +5,7 @@ from copy import deepcopy
 from network_support import validate_model
 from main import breadth_first, depth_first, shortest_hop_path, MY_RESTRICTION
 
-TEST_STAGE = 2  # Raise to 3 Thursday after completing the route tests.
+TEST_STAGE = 3  # Raise to 3 Thursday after completing the route tests.
 
 
 def test_model():
@@ -43,11 +43,34 @@ def test_traversals():
 
 def test_paths_and_personal_case():
     """Check route boundaries and your issued blocked-node result independently."""
+    from network_data import GRAPH, START, GOAL, RESTRICTIONS
+    original = {room: neighbors.copy() for room, neighbors in GRAPH.items()}
+
     # Check a small known path, start=goal, disconnected goal, and a blocked endpoint.
+    path, _ = shortest_hop_path(GRAPH, START, GOAL)
+    assert path == ["Entrance", "Reception", "Office", "Loading"]
+    assert path[0] == START and path[-1] == GOAL
+    assert all(right in GRAPH[left] for left, right in zip(path, path[1:]))
+
+    path_same, _ = shortest_hop_path(GRAPH, START, START)
+    assert path_same == ["Entrance"]
+
+    path_annex, _ = shortest_hop_path(GRAPH, START, "Annex")
+    assert path_annex is None
+
     # Import the supplied workshop data and use MY_RESTRICTION for your personal case.
+    blocked = RESTRICTIONS[MY_RESTRICTION]["blocked"]
+    path_restricted, _ = shortest_hop_path(GRAPH, START, GOAL, blocked)
+
     # Check exact expected endpoints/hops or None, consecutive connections, no blocked
     # rooms in a returned route, and unchanged source data.
-    raise NotImplementedError("Add Thursday's path and personal-case checks.")
+    if path_restricted is not None:
+        assert path_restricted[0] == START and path_restricted[-1] == GOAL
+        assert all(right in GRAPH[left] for left, right in zip(path_restricted, path_restricted[1:]))
+        for blocked_node in blocked:
+            assert blocked_node not in path_restricted
+
+    assert GRAPH == original
 
 
 if __name__ == "__main__":

@@ -72,21 +72,48 @@ def depth_first(graph, start):
 # THURSDAY — Save parents during BFS, then follow one chain backward.
 def reconstruct_path(parents, goal):
     """Return start-to-goal order by following the BFS parent chain."""
-    # Begin at goal and collect names until the parent is None.
-    # Reverse the new list before returning it; preserve parents.
-    raise NotImplementedError("Complete parent-chain reconstruction.")
+    # Walk from goal to start by following the parent chain, collecting node names.
+    path = []
+    node = goal
+    while node is not None:
+        path.append(node)
+        node = parents.get(node)
+    
+    # Reverse to get start-to-goal order and preserve the input parents dictionary.
+    path.reverse()
+    return path
 
 
 def shortest_hop_path(graph, start, goal, blocked=()):
     """Return a permitted fewest-hop path and parents, or None with parent state."""
     blocked_nodes = set(blocked)
     validate_request(graph, start, goal, blocked_nodes)
-    # A blocked start or goal returns None and an empty dictionary.
-    # Begin parents with start: None and a queue containing start.
-    # Process the queue; on reaching goal, return the reconstructed path and parents.
-    # For a neighbor not in parents and not blocked, save its first parent and enqueue.
-    # If the queue runs out, return None and the parents collected.
-    raise NotImplementedError("Complete BFS with parents and blocked nodes.")
+    
+    # Return None immediately if start or goal is blocked.
+    if start in blocked_nodes or goal in blocked_nodes:
+        return None, {}
+    
+    # Initialize parents dictionary; start has no parent, and the BFS queue begins with the start node.
+    parents = {start: None}
+    queue = deque([start])
+    
+    # Perform BFS, tracking each node's parent and stopping when goal is found.
+    while queue:
+        node = queue.popleft()
+        
+        # Check if we have reached the goal; reconstruct and return the path.
+        if node == goal:
+            path = reconstruct_path(parents, goal)
+            return path, parents
+        
+        # For each neighbor not yet visited (and not blocked), record parent and queue it.
+        for neighbor in graph[node]:
+            if neighbor not in parents and neighbor not in blocked_nodes:
+                parents[neighbor] = node
+                queue.append(neighbor)
+    
+    # If the queue is empty and the goal has not been found, return None and all discovered parents.
+    return None, parents
 
 
 def main():

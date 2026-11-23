@@ -3,7 +3,7 @@
 from network_support import validate_model
 from main import breadth_first, depth_first, shortest_hop_path, MY_RESTRICTION
 
-TEST_STAGE = 1  # Raise to 2 Tuesday and 3 Thursday after completing those tests.
+TEST_STAGE = 3  # Raise to 2 Tuesday and 3 Thursday after completing those tests.
 
 
 def test_model():

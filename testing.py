@@ -4,7 +4,7 @@ from collections import deque
 from network_support import validate_request, record_step
 from app_runner import run
 
-STAGE = 1  # Monday 1; Tuesday 2 when traversals work; Thursday 3 when routes work.
+STAGE = 3  # Monday 1; Tuesday 2 when traversals work; Thursday 3 when routes work.
 MY_RESTRICTION = "A"  # Set this to your instructor-issued case in your personal copy.
 
 
@@ -118,7 +118,11 @@ def shortest_hop_path(graph, start, goal, blocked=()):
 
 def main():
     """Run only the selected completed stage using supplied presentation."""
-    run(STAGE, breadth_first, depth_first, shortest_hop_path, MY_RESTRICTION)
+    restriction = input(
+        f"Enter your instructor-issued restriction (leave blank for {MY_RESTRICTION}): "
+    ).strip()
+    selected_restriction = restriction.upper() if restriction else MY_RESTRICTION
+    run(STAGE, breadth_first, depth_first, shortest_hop_path, selected_restriction)
 
 
 if __name__ == "__main__":
